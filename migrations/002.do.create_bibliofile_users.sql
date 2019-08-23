@@ -1,7 +1,7 @@
 CREATE TABLE bibliofile_users (
-  userId SERIAL PRIMARY KEY,
-  firstName TEXT NOT NULL,
-  lastName TEXT NOT NULL,
+  id SERIAL PRIMARY KEY,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
   username TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
   date_created TIMESTAMP NOT NULL DEFAULT now(),
@@ -10,5 +10,5 @@ CREATE TABLE bibliofile_users (
 
 ALTER TABLE bibliofile_books
   ADD COLUMN
-    userId INTEGER REFERENCES bibliofile_users(userId)
+    user_id INTEGER REFERENCES bibliofile_users(id)
     ON DELETE SET NULL;

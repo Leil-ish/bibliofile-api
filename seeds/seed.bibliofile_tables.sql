@@ -6,13 +6,13 @@ TRUNCATE
   bibliofile_users
   RESTART IDENTITY CASCADE;
 
-INSERT INTO bibliofile_users (firstName, lastName, username, password)
+INSERT INTO bibliofile_users (first_name, last_name, username, password)
 VALUES
   ('Leila', 'Anderson', 'leilaanderson', '$2a$12$BjhpkMNzl9pwn5VwreBuwu6Wd03ENC5yrT/l1Mpcd9K3roaGA.iOi'),
   ('Matt', 'Anderson', 'mattanderson', '$2a$12$4WcGXxFbQvL8YT9buYGxMeRmsvKrxz98vS0hoOkgB8cuVOdFw4OHq'),
   ('Test', 'User', 'testuser', '$2a$12$nqKW/GNsv2TOlDgV9w1UfOZf3Zk2wLuHtXPqD8XENPLS7m8yiYUUq');
 
-INSERT INTO bibliofile_books (title, authors, description, categories, imageLinks, isEbook, rating, borrowed, userId)  
+INSERT INTO bibliofile_books (title, authors, description, categories, image_links, is_ebook, rating, borrowed, user_id)  
 VALUES
   ('Warbreaker', 'Brandon Sanderson', 'After bursting onto the fantasy scene with his acclaimed debut novel, Elantris, and following up with his blockbuster Mistborn trilogy, 
   Brandon Sanderson proves again that he is today''s leading master of what Tolkien called “secondary creation,” the invention of whole worlds, complete with magics and myths all their own. 
@@ -52,7 +52,7 @@ VALUES
   to ask a simple question: What if the hero of prophecy fails?', 'Fiction', 'http://books.google.com/books/content?id=t_ZYYXZq4RgC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api',
   false, 5, false, 3);
 
-INSERT INTO bibliofile_notes (libraryId, userId, noteName, content) 
+INSERT INTO bibliofile_notes (library_id, user_id, note_name, content) 
 VALUES
   (1, 3, 'War broken.', 'Hey Siri.'),
   (2, 1, 'Mushrooms!', 'I think there is more here than meets the eye.'),

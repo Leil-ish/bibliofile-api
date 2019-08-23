@@ -5,34 +5,32 @@ const NotesService = {
     return db
       .from('bibliofile_notes AS note')
       .select(
-        'note.libraryId',
-        'note.userId',
-        'note.noteId',
-        'note.noteName',
-        'note.modified',
-        'note.content',
+        'note.id',
+        'note.text',
+        'note.date_created',
+        'note.book_id',
         db.raw(
           `json_strip_nulls(
             row_to_json(
               (SELECT tmp FROM (
                 SELECT
-                  user.userId,
-                  user.username,
-                  user.firstName,
-                  user.lastName,
-                  user.date_created,
-                  user.date_modified
+                  usr.id,
+                  usr.username,
+                  usr.first_name,
+                  usr.last_name,
+                  usr.date_created,
+                  usr.date_modified
               ) tmp)
             )
           ) AS "user"`
         )
       )
       .leftJoin(
-        'bibliofile_users AS user',
-        'note.userId',
-        'user.userId',
+        'bibliofile_users AS usr',
+        'note.user_id',
+        'usr.id',
       )
-      .where('note.libraryId', libraryId)
+      .where('note.id', id)
       .first()
   },
 
@@ -43,24 +41,22 @@ const NotesService = {
       .returning('*')
       .then(([note]) => note)
       .then(note =>
-        NotesService.getById(db, note.libraryId)
+        NotesService.getById(db, note.id)
       )
   },
 
   serializeNote(note) {
-    const {user} = note
+    const { user } = note
     return {
-      libraryId: note.libraryId,
-      userId: note.userId,
-      noteId: note.noteId,
-      noteName: xss(note.noteName),
-      modified: new Date(note.modified),
-      content: xss(note.content),
+      id: note.id,
+      text: xss(note.text),
+      book_id: note.book_id,
+      date_created: new Date(note.date_created),
       user: {
-        id: user.userId,
-        user_name: user.username,
-        full_name: user.firstName,
-        nickname: user.lastName,
+        id: user.id,
+        username: user.username,
+        first_name: user.first_name,
+        last_name: user.last_name,
         date_created: new Date(user.date_created),
         date_modified: new Date(user.date_modified) || null
       },

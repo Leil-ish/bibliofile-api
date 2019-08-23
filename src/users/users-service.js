@@ -4,9 +4,9 @@ const xss = require('xss')
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
 
 const UsersService = {
-  hasUserWithUsername(db, username) {
+  hasUserWithUserName(db, username) {
     return db('bibliofile_users')
-      .where({username})
+      .where({ username })
       .first()
       .then(user => !!user)
   },
@@ -37,9 +37,9 @@ const UsersService = {
   },
   serializeUser(user) {
     return {
-      userId: user.userId,
-      firstName: xss(user.firstName),
-      lastName: xss(user.lastName),
+      id: user.id,
+      first_name: xss(user.first_name),
+      last_name: xss(user.last_name),
       username: xss(user.username),
       date_created: new Date(user.date_created),
     }
