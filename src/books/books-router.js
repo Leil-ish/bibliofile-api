@@ -1,6 +1,6 @@
 const express = require('express')
 const BooksService = require('./books-service')
-const { requireAuth } = require('../middleware/jwt-auth')
+const {requireAuth} = require('../middleware/jwt-auth')
 
 const booksRouter = express.Router()
 

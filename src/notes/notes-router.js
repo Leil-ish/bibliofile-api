@@ -8,9 +8,17 @@ const jsonBodyParser = express.json()
 
 notesRouter
   .route('/')
+  .get((req, res, next) => {
+    NotesService.getAllNotes(req.app.get('db'))
+      .then(notes => {
+        res.json(notes.map(NotesService.serializeNote))
+      })
+      .catch(next)
+  })
+
   .post(requireAuth, jsonBodyParser, (req, res, next) => {
-    const { libraryId, text } = req.body
-    const newNote = { libraryId, text }
+    const { book_id, text } = req.body
+    const newNote = { book_id, text }
 
     for (const [key, value] of Object.entries(newNote))
       if (value == null)
@@ -18,7 +26,7 @@ notesRouter
           error: `Missing '${key}' in request body`
         })
 
-    newNote.userId = req.user.userId
+    newNote.user_id = req.user.id
 
     NotesService.insertNote(
       req.app.get('db'),
@@ -27,7 +35,7 @@ notesRouter
       .then(note => {
         res
           .status(201)
-          .location(path.posix.join(req.originalUrl, `/${noteId}`))
+          .location(path.posix.join(req.originalUrl, `/${note.id}`))
           .json(NotesService.serializeNote(note))
       })
       .catch(next)

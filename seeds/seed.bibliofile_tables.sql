@@ -52,7 +52,7 @@ VALUES
   to ask a simple question: What if the hero of prophecy fails?', 'Fiction', 'http://books.google.com/books/content?id=t_ZYYXZq4RgC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api',
   false, 5, false, 3);
 
-INSERT INTO bibliofile_notes (library_id, user_id, note_name, content) 
+INSERT INTO bibliofile_notes (book_id, user_id, note_name, content) 
 VALUES
   (1, 3, 'War broken.', 'Hey Siri.'),
   (2, 1, 'Mushrooms!', 'I think there is more here than meets the eye.'),

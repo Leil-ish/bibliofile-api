@@ -1,35 +1,23 @@
 const xss = require('xss')
 
 const NotesService = {
-  getById(db, id) {
+
+  getAllNotes(db) {
     return db
-      .from('bibliofile_notes AS note')
-      .select(
-        'note.id',
-        'note.text',
-        'note.date_created',
-        'note.book_id',
-        db.raw(
-          `json_strip_nulls(
-            row_to_json(
-              (SELECT tmp FROM (
-                SELECT
-                  usr.id,
-                  usr.username,
-                  usr.first_name,
-                  usr.last_name,
-                  usr.date_created,
-                  usr.date_modified
-              ) tmp)
-            )
-          ) AS "user"`
-        )
-      )
-      .leftJoin(
-        'bibliofile_users AS usr',
-        'note.user_id',
-        'usr.id',
-      )
+    .from('bibliofile_notes AS bib_note')
+    .select(
+      'bib_note.id',
+      'bib_note.book_id',
+      'bib_note.user_id',
+      'bib_note.note_name',
+      'bib_note.modified',
+      'bib_note.content',
+    )
+    .groupBy('bib_note.id')
+  },
+
+  getById(db, id) {
+    return NotesService.getAllBooks(db)
       .where('note.id', id)
       .first()
   },
@@ -46,20 +34,13 @@ const NotesService = {
   },
 
   serializeNote(note) {
-    const { user } = note
     return {
       id: note.id,
-      text: xss(note.text),
       book_id: note.book_id,
-      date_created: new Date(note.date_created),
-      user: {
-        id: user.id,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        date_created: new Date(user.date_created),
-        date_modified: new Date(user.date_modified) || null
-      },
+      user_id: note.user_id,
+      note_name: xss(note.note_name),
+      content: xss(note.content),
+      modified: new Date(note.modified),
     }
   }
 }

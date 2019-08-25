@@ -3,125 +3,65 @@ const xss = require('xss')
 const BooksService = {
   getAllBooks(db) {
     return db
-      .from('bibliofile_books AS book')
+      .from('bibliofile_books AS bib_book')
       .select(
-        'book.id',
-        'book.title',
-        'book.authors',
-        'book.description',
-        'book.categories',
-        'book.image_links',
-        'book.is_ebook',
-        'book.rating',
-        'book.borrowed',
-        db.raw(
-          `count(DISTINCT note) AS number_of_notes`
-        ),
-        db.raw(
-          `json_strip_nulls(
-            json_build_object(
-              'id', usr.id,
-              'username', usr.username,
-              'first_name', usr.first_name,
-              'last_name', usr.last_name,
-              'date_created', usr.date_created,
-              'date_modified', usr.date_modified
-            )
-          ) AS "user"`
-        ),
-      )
-      .leftJoin(
-        'bibliofile_notes AS note',
-        'book.id',
-        'note.book_id',
-      )
-      .leftJoin(
-        'bibliofile_users AS usr',
-        'book.user_id',
-        'usr.id',
-      )
-      .groupBy('book.id', 'usr.id')
-  },
-
-  getById(db, id) {
-    return BooksService.getAllBooks(db)
-      .where('book.id', id)
-      .first()
-  },
-
-  getNotesForBook(db, book_id) {
-    return db
-      .from('bibliofile_notes AS note')
-      .select(
-        'note.id',
-        'note.text',
-        'note.date_created',
-        db.raw(
-          `json_strip_nulls(
-            row_to_json(
-              (SELECT tmp FROM (
-                SELECT
-                  usr.id,
-                  usr.username,
-                  usr.first_name,
-                  usr.last_name,
-                  usr.date_created,
-                  usr.date_modified
-              ) tmp)
-            )
-          ) AS "user"`
+        'bib_book.id',
+        'bib_book.title',
+        'bib_book.authors',
+        'bib_book.description',
+        'bib_book.categories',
+        'bib_book.image_links',
+        'bib_book.is_ebook',
+        'bib_book.rating',
+        'bib_book.borrowed',
+        'bib_book.user_id',
         )
-      )
-      .where('note.book_id', book_id)
-      .leftJoin(
-        'bibliofile_users AS usr',
-        'note.user_id',
-        'usr.id',
-      )
-      .groupBy('note.id', 'usr.id')
-  },
-
-  serializeBook(book) {
-    const { author } = book
-    return {
-      id: book.id,
-      title: xss(book.title),
-      authors: xss(book.authors),
-      description: xss(book.description),
-      categories: xss(book.categories),
-      image_links: xss(book.image_links),
-      is_ebook: xss(book.is_ebook),
-      rating: xss(book.rating),
-      borrowed: xss(book.borrowed),
-      number_of_notes: Number(book.number_of_notes) || 0,
-      author: {
-        id: author.id,
-        username: author.username,
-        first_name: author.first_name,
-        last_name: author.last_name,
-        date_created: new Date(author.date_created),
-        date_modified: new Date(author.date_modified) || null
+        .groupBy('bib_book.id')
       },
-    }
-  },
-
-  serializeBookNote(note) {
-    const { user } = note
-    return {
-      id: note.id,
-      book_id: note.book_id,
-      text: xss(note.text),
-      date_created: new Date(note.date_created),
-      user: {
-        id: user.id,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        date_created: new Date(user.date_created),
-        date_modified: new Date(user.date_modified) || null
-      },
-    }
-  },
-}
-
-module.exports = BooksService
+  
+    getById(db, id) {
+      return BooksService.getAllBooks(db)
+        .where('bib_book.id', id)
+        .first()
+    },
+  
+    getNotesForBook(db, book_id) {
+      return db
+        .from('bibliofile_notes AS bib_note')
+        .select(
+          'bib_note.id',
+          'bib_note.note_name',
+          'bib_note.content',
+        )
+        .where('bib_note.book_id', book_id)
+        .groupBy('bib_note.id')
+    },
+  
+    serializeBook(book) {
+      return {
+        id: book.id,
+        title: xss(book.title),
+        authors: xss(book.authors),
+        description: xss(book.description),
+        categories: xss(book.categories),
+        image_links: xss(book.image_links),
+        is_ebook: book.is_ebook,
+        rating: book.rating,
+        borrowed: book.borrowed,
+        user_id: book.user_id,
+      }
+    },
+  
+    serializeBookNote(note) {
+      return {
+        id: note.id,
+        book_id: note.book_id,
+        user_id: note.user_id,
+        note_name: note.note_name,
+        modified: new Date(note.modified),
+        content: xss(note.content),
+      }
+    },
+  }
+  
+  module.exports = BooksService

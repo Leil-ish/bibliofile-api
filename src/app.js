@@ -22,7 +22,7 @@ app.use(cors())
 
 app.use(helmet())
 
-app.use('/api/books', booksRouter)
+app.use('/api/library', booksRouter)
 app.use('/api/notes', notesRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)

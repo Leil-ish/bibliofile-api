@@ -21,12 +21,12 @@ usersRouter
     if (passwordError)
       return res.status(400).json({ error: passwordError })
 
-    UsersService.hasUserWithUserName(
+    UsersService.hasUserWithUsername(
       req.app.get('db'),
       username
     )
-      .then(hasUserWithUserName => {
-        if (hasUserWithUserName)
+      .then(hasUserWithUsername => {
+        if (hasUserWithUsername)
           return res.status(400).json({ error: `Username already taken` })
 
         return UsersService.hashPassword(password)
