@@ -2,7 +2,6 @@ const express = require('express')
 const path = require('path')
 const NotesService = require('./notes-service')
 const { requireAuth } = require('../middleware/jwt-auth')
-
 const notesRouter = express.Router()
 const jsonBodyParser = express.json()
 
@@ -17,8 +16,8 @@ notesRouter
   })
 
   .post(requireAuth, jsonBodyParser, (req, res, next) => {
-    const { book_id, text } = req.body
-    const newNote = { book_id, text }
+    const { book_id, note_name, content } = req.body
+    const newNote = { book_id, note_name, content }
 
     for (const [key, value] of Object.entries(newNote))
       if (value == null)
@@ -35,7 +34,7 @@ notesRouter
       .then(note => {
         res
           .status(201)
-          .location(path.posix.join(req.originalUrl, `/${note.id}`))
+          .location(path.posix.join(req.originalUrl, `/${note.book_id}`))
           .json(NotesService.serializeNote(note))
       })
       .catch(next)
