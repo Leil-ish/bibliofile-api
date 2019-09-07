@@ -22,7 +22,8 @@ booksRouter
     res.json(BooksService.serializeBook(res.book))
   })
 
-booksRouter.route('/:book_id/notes/')
+booksRouter
+  .route('/:book_id/notes/')
   .all(requireAuth)
   .all(checkBookExists)
   .get((req, res, next) => {
@@ -35,6 +36,57 @@ booksRouter.route('/:book_id/notes/')
       })
       .catch(next)
   })
+
+  booksRouter
+  .route('/:book_id/notes/note_id')
+  .all(requireAuth)
+  .all(checkNoteExists)
+  .get((req, res, next) => {
+    BooksService.getNoteById(
+      req.app.get('db'),
+      req.params.note_id
+    )
+      .then(notes => {
+        res.json(notes.map(BooksService.serializeBookNote))
+      })
+      .catch(next)
+  })
+
+  booksRouter
+  .route('/:book_id/notes/note_id')
+  .all(requireAuth)
+  .all(checkNoteExists)
+  .all((req, res, next) => {
+    BooksService.getNotesById(
+      req.app.get('db'),
+      req.params.note_id
+    )
+      .then(note => {
+        if (!note) {
+          return res.status(404).json({
+            error: { message: `Book doesn't exist` }
+          })
+        }
+        res.note = note
+        next()
+      })
+      .catch(next)
+  })
+  .get((req, res, next) => {
+    res.json(serializeBook(res.note))
+  })
+  .delete((req, res, next) => {
+    BooksService.deleteNote(
+      req.app.get('db'),
+      req.params.note_id
+    )
+      .then(numRowsAffected => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
+
+
 
 async function checkBookExists(req, res, next) {
   try {
@@ -49,6 +101,25 @@ async function checkBookExists(req, res, next) {
       })
 
     res.book = book
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
+async function checkNoteExists(req, res, next) {
+  try {
+    const note = await BooksService.getNoteById(
+      req.app.get('db'),
+      req.params.note_id
+    )
+
+    if (!note)
+      return res.status(404).json({
+        error: `Note doesn't exist`
+      })
+
+    res.note = note
     next()
   } catch (error) {
     next(error)

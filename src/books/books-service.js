@@ -24,6 +24,17 @@ const BooksService = {
         .where('bib_book.id', id)
         .first()
     },
+
+    getNoteById(db, id) {
+      return db
+      .from('bibliofile_notes AS bib_note')
+      .select(
+        'bib_note.id',
+        'bib_note.note_name',
+        'bib_note.content',
+      )
+      .where('bib_note.id', id)
+    },
   
     getNotesForBook(db, book_id) {
       return db
@@ -35,6 +46,18 @@ const BooksService = {
         )
         .where('bib_note.book_id', book_id)
         .groupBy('bib_note.id')
+    },
+
+    deleteNote(db, book_id) {
+      return db
+      .from('bibliofile_notes AS bib_note')
+      .select(
+        'bib_note.id',
+        'bib_note.note_name',
+        'bib_note.content',
+      )
+      .where('bib_note.book_id', book_id)
+      .delete()
     },
   
     serializeBook(book) {
@@ -54,7 +77,7 @@ const BooksService = {
   
     serializeBookNote(note) {
       return {
-        id: note.id,
+        note_id: note.id,
         book_id: note.book_id,
         user_id: note.user_id,
         note_name: note.note_name,
