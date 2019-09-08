@@ -59,6 +59,17 @@ const BooksService = {
       .where('bib_note.book_id', book_id)
       .delete()
     },
+
+    insertBook(db, newBook) {
+      return db
+        .insert(newBook)
+        .into('bibliofile_books')
+        .returning('*')
+        .then(([book]) => book)
+        .then(book =>
+          BooksService.getById(db, book.id)
+        )
+    },
   
     serializeBook(book) {
       return {

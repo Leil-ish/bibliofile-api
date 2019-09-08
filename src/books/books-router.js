@@ -1,7 +1,8 @@
 const express = require('express')
+const path = require('path')
 const BooksService = require('./books-service')
 const {requireAuth} = require('../middleware/jwt-auth')
-
+const jsonBodyParser = express.json()
 const booksRouter = express.Router()
 
 booksRouter
@@ -13,6 +14,30 @@ booksRouter
       })
       .catch(next)
   })
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+    const {title, authors, description, categories, image_links, is_ebook} = req.body
+    const newBook = {title, authors, description, categories, image_links, is_ebook}
+
+    for (const [key, value] of Object.entries(newBook))
+      if (value == null)
+        return res.status(400).json({
+          error: `Missing '${key}' in request body`
+        })
+
+    newBook.user_id = req.user.id
+
+    BooksService.insertBook(
+      req.app.get('db'),
+      newBook
+    )
+      .then(book => {
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${book.id}`))
+          .json(BooksService.serializeBook(book))
+      })
+      .catch(next)
+    })
 
 booksRouter
   .route('/:book_id')
@@ -85,8 +110,6 @@ booksRouter
       })
       .catch(next)
   })
-
-
 
 async function checkBookExists(req, res, next) {
   try {
