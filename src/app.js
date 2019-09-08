@@ -3,7 +3,7 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
-const {CLIENT_ORIGIN} = require('./config');
+// const {CLIENT_ORIGIN} = require('./config');
 const {NODE_ENV} = require('./config')
 const booksRouter = require('./books/books-router')
 const notesRouter = require('./notes/notes-router')
@@ -16,7 +16,7 @@ app.use(morgan((NODE_ENV === 'production') ? 'tiny' : 'common', {
     skip: () => NODE_ENV === 'test',
   }))
 
-app.use(cors({origin: CLIENT_ORIGIN}));
+// app.use(cors({origin: CLIENT_ORIGIN}));
 
 app.use(cors())
 
