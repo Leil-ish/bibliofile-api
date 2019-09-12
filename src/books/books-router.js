@@ -46,6 +46,16 @@ booksRouter
   .get((req, res) => {
     res.json(BooksService.serializeBook(res.book))
   })
+  .delete((req, res, next) => {
+    BooksService.deleteNote(
+      req.app.get('db'),
+      req.params.note_id
+    )
+      .then(numRowsAffected => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
 
 booksRouter
   .route('/:book_id/notes/')

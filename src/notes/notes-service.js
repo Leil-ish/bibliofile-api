@@ -16,6 +16,17 @@ const NotesService = {
     .groupBy('bib_note.id')
   },
 
+  getNoteById(db, id) {
+    return db
+    .from('bibliofile_notes AS bib_note')
+    .select(
+      'bib_note.id',
+      'bib_note.note_name',
+      'bib_note.content',
+    )
+    .where('bib_note.id', id)
+  },
+
   insertNote(db, newNote) {
     return db
       .insert(newNote)
@@ -23,7 +34,7 @@ const NotesService = {
       .returning('*')
       .then(([note]) => note)
       .then(note =>
-        NotesService.getById(db, note.book_id)
+        NotesService.getNoteById(db, note.book_id)
       )
   },
 

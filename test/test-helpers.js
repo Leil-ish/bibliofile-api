@@ -132,7 +132,7 @@ function makeNotesArray(users, books) {
   ];
 }
 
-function makeExpectedBook(book, notes=[]) {
+function makeExpectedBook(book) {
 
   return {
     id: book.id,

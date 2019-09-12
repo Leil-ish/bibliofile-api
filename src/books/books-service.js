@@ -60,6 +60,25 @@ const BooksService = {
       .delete()
     },
 
+    deleteBook(db, id) {
+      return db
+      .from('bibliofile_books AS book')
+      .select(
+        'bib_book.id',
+        'bib_book.title',
+        'bib_book.authors',
+        'bib_book.description',
+        'bib_book.categories',
+        'bib_book.image_links',
+        'bib_book.is_ebook',
+        'bib_book.rating',
+        'bib_book.borrowed',
+        'bib_book.user_id',
+        )
+      .where('bib_book.id', id)
+      .delete()
+    },
+
     insertBook(db, newBook) {
       return db
         .insert(newBook)
