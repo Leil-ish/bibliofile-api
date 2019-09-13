@@ -27,17 +27,6 @@ const NotesService = {
     .where('bib_note.id', id)
   },
 
-  insertNote(db, newNote) {
-    return db
-      .insert(newNote)
-      .into('bibliofile_notes')
-      .returning('*')
-      .then(([note]) => note)
-      .then(note =>
-        NotesService.getNoteById(db, note.book_id)
-      )
-  },
-
   serializeNote(note) {
     return {
       id: note.id,

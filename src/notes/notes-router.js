@@ -15,29 +15,4 @@ notesRouter
       .catch(next)
   })
 
-  .post(requireAuth, jsonBodyParser, (req, res, next) => {
-    const { book_id, note_name, content } = req.body
-    const newNote = { book_id, note_name, content }
-
-    for (const [key, value] of Object.entries(newNote))
-      if (value == null)
-        return res.status(400).json({
-          error: `Missing '${key}' in request body`
-        })
-
-    newNote.user_id = req.user.id
-
-    NotesService.insertNote(
-      req.app.get('db'),
-      newNote
-    )
-      .then(note => {
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl, `/${note.book_id}`))
-          .json(NotesService.serializeNote(note))
-      })
-      .catch(next)
-    })
-
 module.exports = notesRouter

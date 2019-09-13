@@ -79,6 +79,17 @@ const BooksService = {
       .delete()
     },
 
+    insertNote(db, newNote) {
+      return db
+        .insert(newNote)
+        .into('bibliofile_notes')
+        .returning('*')
+        .then(([note]) => note)
+        .then(note =>
+          BooksService.getNoteById(db, note.book_id)
+        )
+    },
+
     insertBook(db, newBook) {
       return db
         .insert(newBook)

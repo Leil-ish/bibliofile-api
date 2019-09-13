@@ -38,6 +38,30 @@ booksRouter
       })
       .catch(next)
     })
+  .put(requireAuth, jsonBodyParser, (req, res, next) => {
+    const {title, authors, description, categories, image_links, is_ebook, borrowed, rating} = req.body
+    const newBook = {title, authors, description, categories, image_links, is_ebook, borrowed, rating}
+
+    for (const [key, value] of Object.entries(newBook))
+      if (value == null)
+        return res.status(400).json({
+          error: `Missing '${key}' in request body`
+        })
+
+    newBook.user_id = req.user.id
+
+    BooksService.insertBook(
+      req.app.get('db'),
+      newBook
+    )
+      .then(book => {
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${book.id}`))
+          .json(BooksService.serializeBook(book))
+      })
+      .catch(next)
+    })
 
 booksRouter
   .route('/:book_id')
@@ -71,6 +95,35 @@ booksRouter
       })
       .catch(next)
   })
+
+booksRouter
+  .route('/:book_id/add-note/')
+  .all(requireAuth)
+  .all(checkBookExists)
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+    const { book_id, note_name, content } = req.body
+    const newNote = { book_id, note_name, content }
+
+    for (const [key, value] of Object.entries(newNote))
+      if (value == null)
+        return res.status(400).json({
+          error: `Missing '${key}' in request body`
+        })
+
+    newNote.user_id = req.user.id
+
+    BooksService.insertNote(
+      req.app.get('db'),
+      newNote
+    )
+      .then(note => {
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${note.book_id}`))
+          .json(BooksService.serializeBookNote(note))
+      })
+      .catch(next)
+    })
 
   booksRouter
   .route('/:book_id/notes/note_id')
