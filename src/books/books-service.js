@@ -48,15 +48,13 @@ const BooksService = {
         .groupBy('bib_note.id')
     },
 
-    deleteNote(db, book_id) {
+    deleteNote(db, id) {
       return db
       .from('bibliofile_notes AS bib_note')
       .select(
         'bib_note.id',
-        'bib_note.note_name',
-        'bib_note.content',
       )
-      .where('bib_note.book_id', book_id)
+      .where('bib_note.id', id)
       .delete()
     },
 
@@ -93,6 +91,18 @@ const BooksService = {
     insertBook(db, newBook) {
       return db
         .insert(newBook)
+        .into('bibliofile_books')
+        .returning('*')
+        .then(([book]) => book)
+        .then(book =>
+          BooksService.getById(db, book.id)
+        )
+    },
+
+    updateBook(db, id, updatedBook) {
+      return db
+        .where({ id })
+        .update(updatedBook)
         .into('bibliofile_books')
         .returning('*')
         .then(([book]) => book)

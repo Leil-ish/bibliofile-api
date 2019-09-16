@@ -64,6 +64,40 @@ booksRouter
     })
 
 booksRouter
+    .route('/add-book')
+    .get((req, res, next) => {
+      BooksService.getAllBooks(req.app.get('db'))
+        .then(books => {
+          res.json(books.map(BooksService.serializeBook))
+        })
+        .catch(next)
+    })
+    .post(requireAuth, jsonBodyParser, (req, res, next) => {
+      const {title, authors, description, categories} = req.body
+      const newBook = {title, authors, description, categories}
+  
+      for (const [key, value] of Object.entries(newBook))
+        if (value == null)
+          return res.status(400).json({
+            error: `Missing '${key}' in request body`
+          })
+  
+      newBook.user_id = req.user.id
+  
+      BooksService.insertBook(
+        req.app.get('db'),
+        newBook
+      )
+        .then(book => {
+          res
+            .status(201)
+            .location(path.posix.join(req.originalUrl, `/${book.id}`))
+            .json(BooksService.serializeBook(book))
+        })
+        .catch(next)
+      })
+
+booksRouter
   .route('/:book_id')
   .all(requireAuth)
   .all(checkBookExists)
@@ -126,7 +160,33 @@ booksRouter
     })
 
   booksRouter
-  .route('/:book_id/notes/note_id')
+  .route('/:book_id/edit-book/')
+  .all(requireAuth)
+  .all(checkBookExists)
+  .patch(requireAuth, jsonBodyParser, (req, res, next) => {
+    const {rating} = req.body
+    const updatedBook = {rating}
+
+    for (const [key, value] of Object.entries(updatedBook))
+      if (value == null)
+        return res.status(400).json({
+          error: `Missing '${key}' in request body`
+        })
+
+    BooksService.updateBook(
+      req.app.get('db'),
+      updatedBook
+    )
+    .then(book => {
+      res
+        .status(200)
+        .location(path.posix.join(req.originalUrl, `/${book.id}`))
+    })
+      .catch(next)
+    })
+
+  booksRouter
+  .route('/:book_id/notes/:note_id')
   .all(requireAuth)
   .all(checkNoteExists)
   .get((req, res, next) => {
@@ -141,34 +201,15 @@ booksRouter
   })
 
   booksRouter
-  .route('/:book_id/notes/note_id')
+  .route('/:book_id/notes/:note_id')
   .all(requireAuth)
   .all(checkNoteExists)
-  .all((req, res, next) => {
-    BooksService.getNotesById(
-      req.app.get('db'),
-      req.params.note_id
-    )
-      .then(note => {
-        if (!note) {
-          return res.status(404).json({
-            error: { message: `Book doesn't exist` }
-          })
-        }
-        res.note = note
-        next()
-      })
-      .catch(next)
-  })
-  .get((req, res, next) => {
-    res.json(serializeBook(res.note))
-  })
   .delete((req, res, next) => {
     BooksService.deleteNote(
       req.app.get('db'),
       req.params.note_id
     )
-      .then(numRowsAffected => {
+      .then(() => {
         res.status(204).end()
       })
       .catch(next)
