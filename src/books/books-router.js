@@ -101,13 +101,10 @@ booksRouter
   .route('/:book_id')
   .all(requireAuth)
   .all(checkBookExists)
-  .get((req, res) => {
-    res.json(BooksService.serializeBook(res.book))
-  })
   .delete((req, res, next) => {
     BooksService.deleteBook(
       req.app.get('db'),
-      req.params.id
+      req.params.book_id
     )
       .then(() => {
         res.status(204).end()
