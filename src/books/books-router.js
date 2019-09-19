@@ -105,11 +105,11 @@ booksRouter
     res.json(BooksService.serializeBook(res.book))
   })
   .delete((req, res, next) => {
-    BooksService.deleteNote(
+    BooksService.deleteBook(
       req.app.get('db'),
-      req.params.note_id
+      req.params.id
     )
-      .then(numRowsAffected => {
+      .then(() => {
         res.status(204).end()
       })
       .catch(next)
