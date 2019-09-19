@@ -101,6 +101,9 @@ booksRouter
   .route('/:book_id')
   .all(requireAuth)
   .all(checkBookExists)
+  .get((req, res) => {
+    res.json(BooksService.serializeBook(res.book))
+  })
   .delete((req, res, next) => {
     BooksService.deleteBook(
       req.app.get('db'),
