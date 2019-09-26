@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS bibliofile_books CASCADE;

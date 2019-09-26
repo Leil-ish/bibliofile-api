@@ -1,26 +1,41 @@
-# Express Boilerplate!
+# Bibliofile API
 
-This is a boilerplate project used for starting new projects!
+![Landing Page](https://i.imgur.com/ZXs9P3Y.png)
 
-## Set up
+This is the backend for a fullstack virtual library project called Bibliofile, found online at <https://leil-ish-bibliofile-app.now.sh/> with backend hosted at <https://guarded-taiga-77278.herokuapp.com/>. It allows users to:
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+* Search for books using an interface that pulls from the Google Books API  
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+![Search Interface](https://i.imgur.com/uZkzA5t.png)
 
-## Scripts
+* Add those books (along with their descriptions, author and genre information, etc.) to a personal virtual library with one click  
 
-Start the application `npm start`
+![Book results page showing Harry Potter book](https://i.imgur.com/Or6HkVK.png)
 
-Start nodemon for the application `npm run dev`
+* Add books manually in the event that they cannot be found on Google Books  
 
-Run the tests `npm test`
+![Add book page](https://i.imgur.com/jZkzigi.png)
 
-## Deploying
+* Add notes to the books in their libraries  
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+![Notes page](https://i.imgur.com/MkCnkJJ.png)
+
+To get started, click "Register" on the landing page and enter your name, username, and password. On this page, you can also send me an email, check out my portfolio site, or visit me on LinkedIn or GitHub.  
+
+![Landing Page](https://i.imgur.com/LIIFeCD.png)
+
+From there, you can navigate using the fixed nav icons at the top left.  
+
+![Header](https://i.imgur.com/ZXs9P3Y.png)  
+
+The API endpoints that are useful in using this app are:
+
+* <https://guarded-taiga-77278.herokuapp.com/api/library> - gets all books
+* <https://guarded-taiga-77278.herokuapp.com/api/notes> - gets all notes
+* <https://guarded-taiga-77278.herokuapp.com/api/library/:book_id> - gets a book by ID
+* <https://guarded-taiga-77278.herokuapp.com/api/library/:book_id/notes> - gets notes related to a particular book
+* <https://guarded-taiga-77278.herokuapp.com/api/library/:book_id/:note_id> - gets a particular note related to a particular book
+
+Endpoints that specify a particular resource can handle DELETE and GET requests. All other endpoints can handle GET and POST requests. All endpoints beyond the landing page require JWT authentication, most easily accomplished by registering at <https://leil-ish-bibliofile-app.now.sh/> and getting an auth token.
+
+This project was created using React on the frontend and Node.js, Express, and PostgreSQL on the backend. If you like this repo, you can find its backend companion at <https://github.com/Leil-ish/bibliofile-client>!
