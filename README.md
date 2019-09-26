@@ -1,26 +1,17 @@
-# Express Boilerplate!
+# Bibliofile API
 
-This is a boilerplate project used for starting new projects!
+![Landing Page](https://i.imgur.com/ZXs9P3Y.png)
 
-## Set up
+This is the backend for a virtual library project called Bibliofile, found online at <https://leil-ish-bibliofile-app.now.sh/!> It allows users to:
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+* Search for books using an interface that pulls from the Google Books API
+![Search Interface](https://i.imgur.com/uZkzA5t.png)
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+* Add those books (along with their descriptions, author and genre information, etc.) to a personal virtual library with one click
+![Book results page showing Harry Potter book](https://i.imgur.com/Or6HkVK.png)
 
-## Scripts
+* Add books manually in the event that they cannot be found on Google Books
+![Add book page](https://i.imgur.com/jZkzigi.png)
 
-Start the application `npm start`
-
-Start nodemon for the application `npm run dev`
-
-Run the tests `npm test`
-
-## Deploying
-
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+* Add notes to the books in their libraries
+![Notes page](https://i.imgur.com/MkCnkJJ.png)

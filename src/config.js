@@ -3,5 +3,4 @@ module.exports = {
     NODE_ENV: process.env.NODE_ENV || 'development',
     DB_URL: process.env.DATABASE_URL || 'postgresql://bibliofile@localhost/bibliofile',
     JWT_SECRET: process.env.JWT_SECRET || 'change-this-secret',
-    //CLIENT_ORIGIN: 'https://leil-ish-bibliofile-app.now.sh/' || 'localhost:3000',
   }
