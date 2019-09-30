@@ -9,6 +9,7 @@ authRouter
     const { username, password } = req.body
     const loginUser = { username, password }
 
+    //Check username and password presence
     for (const [key, value] of Object.entries(loginUser))
       if (value == null)
         return res.status(400).json({
@@ -26,6 +27,7 @@ authRouter
           })
 
         return AuthService.comparePasswords(loginUser.password, dbUser.password)
+          //Compare password entered to saved password
           .then(compareMatch => {
             if (!compareMatch)
               return res.status(400).json({
@@ -34,6 +36,7 @@ authRouter
 
             const sub = dbUser.username
             const payload = { user_id: dbUser.id }
+            //Supply auth token
             res.send({
               authToken: AuthService.createJwt(sub, payload),
             })

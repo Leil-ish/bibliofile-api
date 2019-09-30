@@ -38,30 +38,6 @@ booksRouter
       })
       .catch(next)
     })
-  .put(requireAuth, jsonBodyParser, (req, res, next) => {
-    const {title, authors, description, categories, image_links, is_ebook, borrowed, rating} = req.body
-    const newBook = {title, authors, description, categories, image_links, is_ebook, borrowed, rating}
-
-    for (const [key, value] of Object.entries(newBook))
-      if (value == null)
-        return res.status(400).json({
-          error: `Missing '${key}' in request body`
-        })
-
-    newBook.user_id = req.user.id
-
-    BooksService.insertBook(
-      req.app.get('db'),
-      newBook
-    )
-      .then(book => {
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl, `/${book.id}`))
-          .json(BooksService.serializeBook(book))
-      })
-      .catch(next)
-    })
 
 booksRouter
     .route('/add-book')
@@ -160,28 +136,31 @@ booksRouter
     })
 
   booksRouter
-  .route('/:book_id/edit-book/')
+  .route('/:book_id')
   .all(requireAuth)
   .all(checkBookExists)
   .patch(requireAuth, jsonBodyParser, (req, res, next) => {
-    const {rating} = req.body
-    const updatedBook = {rating}
+    const {rating, borrowed} = req.body
+    const bookToUpdate = {rating, borrowed}
 
-    for (const [key, value] of Object.entries(updatedBook))
-      if (value == null)
-        return res.status(400).json({
-          error: `Missing '${key}' in request body`
-        })
+    const numberOfValues = Object.values(bookToUpdate).filter(Boolean).length
+    if (numberOfValues === 0) {
+      logger.error(`Invalid update without required fields`)
+      return res.status(400).json({
+        error: {
+          message: `Request body must content either 'borrowed' or 'rating'`
+        }
+      })
+    }
 
     BooksService.updateBook(
       req.app.get('db'),
-      updatedBook
+      req.params.book_id,
+      bookToUpdate
     )
-    .then(book => {
-      res
-        .status(200)
-        .location(path.posix.join(req.originalUrl, `/${book.id}`))
-    })
+      .then(() => {
+        res.status(204).end()
+      })
       .catch(next)
     })
 
@@ -215,6 +194,7 @@ booksRouter
       .catch(next)
   })
 
+//Confirm that books and notes exist before they are acted upon
 async function checkBookExists(req, res, next) {
   try {
     const book = await BooksService.getById(

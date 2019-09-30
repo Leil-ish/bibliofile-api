@@ -36,6 +36,7 @@ const BooksService = {
       .where('bib_note.id', id)
     },
   
+    //Handing some notes stuff here because they're connected to particular book IDs
     getNotesForBook(db, book_id) {
       return db
         .from('bibliofile_notes AS bib_note')
@@ -90,18 +91,16 @@ const BooksService = {
         )
     },
 
-    updateBook(db, id, updatedBook) {
+    updateBook(db, id, newBookFields) {
       return db
-        .where({ id })
-        .update(updatedBook)
-        .into('bibliofile_books')
-        .returning('*')
-        .then(([book]) => book)
-        .then(book =>
-          BooksService.getById(db, book.id)
+      .from('bibliofile_books AS bib_book')
+      .select(
+        'bib_book.id',
         )
+      .where('bib_book.id', id)
+      .update(newBookFields)
     },
-  
+
     serializeBook(book) {
       return {
         id: book.id,
